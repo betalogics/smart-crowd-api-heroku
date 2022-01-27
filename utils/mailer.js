@@ -11,7 +11,7 @@ function sendEmail(emailDetailsConfig) {
   });
 
   let mailDetails = {
-    from: Config.SENDER_EMAIL,
+    from: "<" + Config.SENDER_EMAIL + ">",
     to: emailDetailsConfig.to,
     subject: emailDetailsConfig.subject,
     text: emailDetailsConfig.text,
