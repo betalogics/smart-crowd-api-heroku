@@ -1,0 +1,7 @@
+const Config = {
+  SENDER_EMAIL: "example@gmail.com",
+  SENDER_EMAIL_PASS: "*****",
+  SENDER_EMAIL_SERVICE: "gmail",
+};
+
+module.exports = { Config };

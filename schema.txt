@@ -1,0 +1,62 @@
+{
+    "name": "apartment london",
+    "class": "Residential",
+    "city": "paris",
+    "country":"usa",
+    "state": "den",
+    "county": "lolol",
+    "countryInitials": "www",
+    "postCode": 23123,
+    "longitude": 22.0,
+    "latitude": 24.0,
+    "units": 220
+}
+{
+    "email": "hamzatwo@customer.com",
+    "lastName": "Hussain",
+    "isUsCitizen": false,
+    "password": "abcdefghi"
+}
+
+{    
+    "bedroom": "five beds",
+    "bathroom": "2 baths",
+    "garage": "one",
+    "pool": "four",
+    "story": "twenty",
+    "landSize": "40 acre",
+    "lotSize": "2",
+    "constructionType": "marble type ceramic",
+    "foundation": "ply",
+    "roofType": "none",
+    "parking": "yep",
+    "interiorSize": "huge",
+    "heating": "yes",
+    "cooling": "no",
+    "furniture": "none",
+    "appliances": "three fan and one dump",
+    "propertyType": "home",
+    "constructionYear": "1998",
+    "neighbourhood": "gali muhalla",
+    "rentalType": "daily",
+    "section8": "no"
+}
+
+{
+    "propertyId": 1,
+    "grossRentPerYear": 102857.88,
+    "grossRentPerMonth": 8571.49,
+    "propertyManagementCharges": 2571.45,
+    "platformCharges": 128.57,
+    "maintenanceCharges": 531.50,
+    "propertyTaxCharges": 800.00,
+    "insuranceCharges": 0.00,
+    "utilityCharges": 0.00,
+    "netRentPerMonth": 4539.97,
+    "netNetPerYear": 54479.64,
+    "assetPriceInvestment": 590000.00,
+    "platformListingFeeInvestment": 68238.11,
+    "initialMaintenanceReserveInvestment": 17142.98,
+    "miscellaneousCostsInvestment": 7000.00,
+    "expectedIncomePercentage": 7.98
+}
