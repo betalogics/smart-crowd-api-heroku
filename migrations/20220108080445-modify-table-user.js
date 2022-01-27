@@ -11,14 +11,14 @@ module.exports = {
 
     return Promise.all([
       queryInterface.addColumn(
-        'Users',
+        'users',
         'kyc_front_image',
         {
           type: Sequelize.STRING,
         }
       ),
       queryInterface.addColumn(
-        'Users',
+        'users',
         'kyc_back_image',
         {
           type: Sequelize.STRING,
@@ -35,8 +35,8 @@ module.exports = {
      * await queryInterface.dropTable('users');
      */
     return Promise.all([
-      queryInterface.dropColumn('Users', 'kyc_front_image'),
-      queryInterface.dropColumn('Users', 'kyc_back_image'),
+      queryInterface.dropColumn('users', 'kyc_front_image'),
+      queryInterface.dropColumn('users', 'kyc_back_image'),
     ])
   }
 };

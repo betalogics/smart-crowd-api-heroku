@@ -10,7 +10,7 @@ module.exports = {
      */
     return Promise.all([
       queryInterface.addColumn(
-        'Units',
+        'units',
         'price_usd',
         {
           type: Sequelize.DOUBLE,
@@ -28,7 +28,7 @@ module.exports = {
      * await queryInterface.dropTable('users');
      */
     return Promise.all([
-      queryInterface.dropColumn('Units', 'price_usd')
+      queryInterface.dropColumn('units', 'price_usd')
     ])
   }
 };

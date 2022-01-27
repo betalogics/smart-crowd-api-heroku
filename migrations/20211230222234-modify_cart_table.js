@@ -11,7 +11,7 @@ module.exports = {
 
     return Promise.all([
       queryInterface.addColumn(
-        'Cart',
+        'cart',
         'validated',
         {
           type: Sequelize.BOOLEAN,
@@ -31,7 +31,7 @@ module.exports = {
      */
 
     return Promise.all([
-      queryInterface.dropColumn('Cart', 'validated')
+      queryInterface.dropColumn('cart', 'validated')
     ])
   }
 };
