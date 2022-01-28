@@ -28,6 +28,7 @@ async function verifyToken(request, response, next) {
     request.userAuthorizationRole = user?.dataValues?.role;
     request.userId = userID;
     request.isUserApproved = user?.dataValues?.approved;
+    request.activeUser = user?.dataValues?.active;
 
     next();
   } catch (err) {

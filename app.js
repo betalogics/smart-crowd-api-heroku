@@ -3,6 +3,7 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const path = require('path');
 const cors = require('cors');
+const compression = require('compression');
 
 require("dotenv").config();
 
@@ -40,13 +41,14 @@ if (app.get("env") === "production") {
 app.use(function(req,res,next){
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-  res.header('Access-Control-Allow-Headers', 'x-access-token');
+  res.header('Access-Control-Allow-Headers', 'Origin,X-Requested-With,content-type,Accept,Authorization,x-access-token');
   res.header('Access-Control-Allow-Credentials', true);
   next();
 })
 app.use(express.static(path.join(__dirname, "assets")));
 app.use(express.json());
 app.use(helmet());
+app.use(compression());
 
 app.get("/", (req, res) =>
   res.status(200).json({ Message: "Smart-Crowd-API" })

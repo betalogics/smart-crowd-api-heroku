@@ -48,7 +48,7 @@ const completeEmailVerificationRequest = {
   verificationCode: {
     in: ["body"],
     errorMessage: "Verification Code is required",
-    isStr: true,
+    isString: true,
     isLength: {
       errorMessage: "Length must be equal to 6",
       options: {

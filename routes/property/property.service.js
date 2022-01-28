@@ -1,5 +1,6 @@
 const model = require("../../models");
 const { StatusCodes } = require("http-status-codes");
+
 const {
   ErrorHandler,
   resolveSchemaValidationResult,
@@ -9,6 +10,8 @@ const {
   ResidentialProperty,
   PropertyFinancials,
 } = require("./property.dto");
+
+require('dotenv').config();
 
 const _removeEmptyProperties = (object) => {
   for (prop in object) {
@@ -27,7 +30,6 @@ const getPropertyListing = async (request, response, next) => {
     queryParams.name = request.query.name;
     queryParams.limit = request.query.limit;
     queryParams.page = request.query.page;
-    console.log(request.query);
 
     let allPropertylisting = await model.Property.findAll({
       include: [{ model: model.Units }],
@@ -508,7 +510,7 @@ const getPropertyWithDetailsByParam = async (request, response, next) => {
     });
 
     let propertyImages = Images.map(
-      (image) => "localhost:3000/properties/" + image.imageName
+      (image) => process.env.SITE_URL + "/properties/" + image.imageName
     );
 
     if (propertyImages) {
