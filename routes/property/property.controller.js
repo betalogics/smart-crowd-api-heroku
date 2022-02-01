@@ -28,7 +28,7 @@ const router = express.Router();
 
 router.get(
   "/",
-  [verifyToken, authorize([USER_ROLES.ADMIN, USER_ROLES.USER])],
+  [verifyToken],
   GetPropertyListing
 );
 

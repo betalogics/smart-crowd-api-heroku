@@ -80,6 +80,8 @@ const _register = async (req, res, next) => {
         attributes: {
           email: userCreated.email,
           role: userCreated.role,
+          firstName: userCreated.firstName,
+          lastName: userCreated.lastName,
           created_at: userCreated.createdAt,
           updated_at: userCreated.updatedAt,
         },
@@ -162,6 +164,8 @@ const _login = async (req, res, next) => {
         attributes: {
           email: user.email,
           role: user.role,
+          firstName: user.firstName,
+          lastName: user.lastName,
           created_at: user.created_at,
           updated_at: user.updated_at,
         },
