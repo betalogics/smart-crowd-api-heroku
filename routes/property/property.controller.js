@@ -28,7 +28,7 @@ const router = express.Router();
 
 router.get(
   "/",
-  [verifyToken, authorize([USER_ROLES.ADMIN, USER_ROLES.USER])],
+  //[verifyToken, authorize([USER_ROLES.ADMIN, USER_ROLES.USER])],
   GetPropertyListing
 );
 
@@ -75,9 +75,9 @@ router.patch(
 router.post(
   "/:id/add-description/",
   [
-    verifyToken,
-    authorize([USER_ROLES.ADMIN]),
-    checkSchema(CreateResidentialPropertyDetailsSchema),
+    // verifyToken,
+    // authorize([USER_ROLES.ADMIN]),
+    // checkSchema(CreateResidentialPropertyDetailsSchema),
   ],
   AddDescriptionToProperty
 );
@@ -92,7 +92,7 @@ router.post(
   AddFinancialsToPropertyById
 );
 
-router.post("/:id/add-images", multerPropertyImages().array('image', 5) ,AddImagesToProperty);
+router.post("/:id/add-images", multerPropertyImages().array('image', 15) ,AddImagesToProperty);
 
 router.get(
   "/:id/get-details/",

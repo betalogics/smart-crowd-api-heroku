@@ -1,20 +1,20 @@
-const models = require("../../models");
-const { sequelize } = require("../../models");
-const { Op } = require("sequelize");
-const { StatusCodes } = require("http-status-codes");
+const models = require('../../models');
+const { sequelize } = require('../../models');
+const { Op } = require('sequelize');
+const { StatusCodes } = require('http-status-codes');
 
 const {
   resolveSchemaValidationResult,
   ErrorHandler,
-} = require("../../helpers/errorHandler");
-const { removeFile } = require("../../utils/filesystem");
+} = require('../../helpers/errorHandler');
+const { removeFile } = require('../../utils/filesystem');
 
-require("dotenv").config();
+require('dotenv').config();
 
 const getUserListing = async (request, response, next) => {
   try {
     const Users = await models.User.findAll({
-      attributes: { exclude: ["password", "salt", "role", "active"] },
+      attributes: { exclude: ['password', 'salt', 'role', 'active'] },
       raw: true,
       nest: true,
     });
@@ -38,17 +38,17 @@ const getUserById = async (request, response, next) => {
 
     let User = await models.User.findOne({
       where: { id: request.params.id },
-      attributes: { exclude: ["password", "salt", "role"] },
+      attributes: { exclude: ['password', 'salt', 'role'] },
       raw: true,
       nest: true,
     });
 
     if (!User) {
-      throw new ErrorHandler(StatusCodes.NOT_FOUND, "User does not exist.");
+      throw new ErrorHandler(StatusCodes.NOT_FOUND, 'User does not exist.');
     }
 
     response.status(StatusCodes.OK).json({
-      type: "User",
+      type: 'User',
       data: {
         id: User.id,
         firstName: User.firstName,
@@ -57,8 +57,8 @@ const getUserById = async (request, response, next) => {
         approved: User.approved,
         isUsCitizen: User.isUsCitizen,
         cryptoWallet: User.wallet,
-        kycFrontImage: process.env.SITE_URL + "/kyc/" + User.kycFrontImage,
-        kycBackImage: process.env.SITE_URL + "/kyc/" + User.kycBackImage,
+        kycFrontImage: process.env.SITE_URL + '/kyc/' + User.kycFrontImage,
+        kycBackImage: process.env.SITE_URL + '/kyc/' + User.kycBackImage,
         createdAt: User.createdAt,
         updatedAt: User.updatedAt,
       },
@@ -77,7 +77,7 @@ const approveUsers = async (request, response, next) => {
     if (!User) {
       throw new ErrorHandler(
         StatusCodes.NOT_FOUND,
-        "User with this id does not exist"
+        'User with this id does not exist'
       );
     }
 
@@ -89,7 +89,7 @@ const approveUsers = async (request, response, next) => {
     if (!approveUserStatus) {
       throw new ErrorHandler(
         StatusCodes.INTERNAL_SERVER_ERROR,
-        "Something went wrong"
+        'Something went wrong'
       );
     }
 
@@ -108,9 +108,9 @@ const addKYCDocumentFront = async (request, response, next) => {
 
     let KYCDocument = request.file;
 
-    if (request.userId !== request.params.id) {
+    if (request.userId !== request.userId) {
       response.status(StatusCodes.FORBIDDEN).json({
-        Message: "User not authorized for this service.",
+        Message: 'User not authorized for this service.',
         apiresponse: false,
       });
       removeFile(request.file.path);
@@ -118,30 +118,30 @@ const addKYCDocumentFront = async (request, response, next) => {
     }
 
     let User = await models.User.findOne({
-      where: { id: request.params.id },
+      where: { id: request.userId },
       raw: true,
       nest: true,
     });
 
     if (User.kycFrontImage !== null) {
-      removeFile("./assets/kyc/" + User.kycFrontImage);
+      removeFile('./assets/kyc/' + User.kycFrontImage);
     }
 
     let UpdateUserKYCFrontDoc = await models.User.update(
       { kycFrontImage: KYCDocument.filename },
-      { where: { id: request.params.id } }
+      { where: { id: request.userId } }
     );
 
     if (UpdateUserKYCFrontDoc[0] !== 1) {
       response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ Message: "Something went wrong", apiresponse: false });
+        .json({ Message: 'Something went wrong', apiresponse: false });
       return;
     }
 
     response
       .status(StatusCodes.CREATED)
-      .json({ Message: "Added KYC Front Document", apiresponse: true });
+      .json({ Message: 'Added KYC Front Document', apiresponse: true });
   } catch (error) {
     next();
   }
@@ -153,9 +153,9 @@ const addKYCDocumentBack = async (request, response, next) => {
 
     let KYCDocument = request.file;
 
-    if (request.userId !== request.params.id) {
+    if (request.userId !== request.userId) {
       response.status(StatusCodes.FORBIDDEN).json({
-        Message: "User not authorized for this service.",
+        Message: 'User not authorized for this service.',
         apiresponse: false,
       });
       removeFile(request.file.path);
@@ -163,30 +163,30 @@ const addKYCDocumentBack = async (request, response, next) => {
     }
 
     let User = await models.User.findOne({
-      where: { id: request.params.id },
+      where: { id: request.userId },
       raw: true,
       nest: true,
     });
 
     if (User.kycBackImage !== null) {
-      removeFile("./assets/kyc/" + User.kycBackImage);
+      removeFile('./assets/kyc/' + User.kycBackImage);
     }
 
     let UpdateUserKYCBackDoc = await models.User.update(
       { kycBackImage: KYCDocument.filename },
-      { where: { id: request.params.id } }
+      { where: { id: request.userId } }
     );
 
     if (UpdateUserKYCBackDoc[0] !== 1) {
       response
         .status(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ Message: "Something went wrong", apiresponse: false });
+        .json({ Message: 'Something went wrong', apiresponse: false });
       return;
     }
 
     response
       .status(StatusCodes.CREATED)
-      .json({ Message: "Added KYC Back Document", apiresponse: true });
+      .json({ Message: 'Added KYC Back Document', apiresponse: true });
   } catch (error) {
     next();
   }
@@ -211,12 +211,12 @@ const getCartContents = async (request, response, next) => {
 
     if (!Cart || Cart.length == 0) {
       response.status(StatusCodes.OK).json({
-        type: "Cart",
+        type: 'Cart',
         data: {
           CartItems: [],
           NetTotal: 0,
         },
-        Message: "Cart Items for the user.",
+        Message: 'Cart Items for the user.',
         apiresponse: true,
       });
 
@@ -232,12 +232,65 @@ const getCartContents = async (request, response, next) => {
     }
 
     response.status(StatusCodes.OK).json({
-      type: "Cart",
+      type: 'Cart',
       data: {
         CartItems: Cart,
         NetTotal: NetTotal,
       },
-      Message: "Cart Items for the user.",
+      Message: 'Cart Items for the user.',
+      apiresponse: true,
+    });
+  } catch (error) {
+    next();
+  }
+};
+
+const getCartContents = async (request, response, next) => {
+  try {
+    resolveSchemaValidationResult(request);
+
+    // if (request.params.id !== request.userId) {
+    //   throw new ErrorHandler(
+    //     StatusCodes.FORBIDDEN,
+    //     "User requesting for unauthorized service."
+    //   );
+    // }
+
+    let Cart = await models.Cart.findAll({
+      where: { userId: request.params.id },
+      raw: true,
+      nest: true,
+    });
+
+    if (!Cart || Cart.length == 0) {
+      response.status(StatusCodes.OK).json({
+        type: 'Cart',
+        data: {
+          CartItems: [],
+          NetTotal: 0,
+        },
+        Message: 'Cart Items for the user.',
+        apiresponse: true,
+      });
+
+      return;
+    }
+
+    let NetTotal = Cart.reduce(
+      (previous, current) => previous.subTotal + current.subTotal
+    );
+
+    if (Cart.length === 1) {
+      NetTotal = Cart[0].subTotal;
+    }
+
+    response.status(StatusCodes.OK).json({
+      type: 'Cart',
+      data: {
+        CartItems: Cart,
+        NetTotal: NetTotal,
+      },
+      Message: 'Cart Items for the user.',
       apiresponse: true,
     });
   } catch (error) {
@@ -250,14 +303,14 @@ const getUnapprovedUserListing = async (request, response, next) => {
     let UnapprovedUsers = await models.User.findAll({
       where: { approved: false },
       attributes: {
-        exclude: ["password", "salt", "role", "createdAt", "updatedAt"],
+        exclude: ['password', 'salt', 'role', 'createdAt', 'updatedAt'],
       },
       raw: true,
       nest: true,
     });
 
     response.status(StatusCodes.OK).json({
-      type: "User",
+      type: 'User',
       data: [...UnapprovedUsers],
       apiresponse: true,
     });
@@ -272,23 +325,23 @@ const getUserVirtualWallet = async (request, response, next) => {
 
     let VirtualWallet = await models.VirtualWallet.findAll({
       where: { userId: request.params.id },
-      attributes: ["userId", "propertyId", "balance"],
+      attributes: ['userId', 'propertyId', 'balance'],
       include: [
-        { model: models.Property, attributes: ["name"] },
+        { model: models.Property, attributes: ['name'] },
         {
           model: models.UserProperty,
-          attributes: ["units"],
-          where: { id: { [Op.col]: "user_property_id" } },
+          attributes: ['units'],
+          where: { id: { [Op.col]: 'user_property_id' } },
         },
       ],
     });
 
     if (VirtualWallet.length == 0) {
       response.status(StatusCodes.OK).json({
-        type: "Virtual Wallet",
+        type: 'Virtual Wallet',
         data: [],
         included: {
-          type: "Virtual Wallet Balance",
+          type: 'Virtual Wallet Balance',
           data: [{ Balance: 0.0 }],
         },
         apiresponse: true,
@@ -298,14 +351,14 @@ const getUserVirtualWallet = async (request, response, next) => {
 
     let WalletTotalBalance = await models.VirtualWallet.findAll({
       where: { userId: request.params.id },
-      attributes: [[sequelize.fn("SUM", sequelize.col("balance")), "Balance"]],
+      attributes: [[sequelize.fn('SUM', sequelize.col('balance')), 'Balance']],
     });
 
     response.status(StatusCodes.OK).json({
-      type: "Virtual Wallet",
+      type: 'Virtual Wallet',
       data: [...VirtualWallet],
       included: {
-        type: "Virtual Wallet Balance",
+        type: 'Virtual Wallet Balance',
         data: [...WalletTotalBalance],
       },
       apiresponse: true,
@@ -317,11 +370,10 @@ const getUserVirtualWallet = async (request, response, next) => {
 
 const createDepositFromWalletRequest = (request, response, next) => {
   try {
-    
   } catch (error) {
     next(error);
   }
-}
+};
 
 module.exports = {
   GetUserListing: getUserListing,
@@ -332,5 +384,5 @@ module.exports = {
   GetCartContents: getCartContents,
   GetUnapprovedUserListing: getUnapprovedUserListing,
   GetUserVirtualWallet: getUserVirtualWallet,
-  CreateDepositFromWalletRequest: createDepositFromWalletRequest
+  CreateDepositFromWalletRequest: createDepositFromWalletRequest,
 };

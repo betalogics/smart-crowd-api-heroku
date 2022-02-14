@@ -50,7 +50,7 @@ router.get(
 );
 
 router.post(
-  "/:id/add-kyc-front",
+  "/add-kyc-front",
   [
     verifyToken,
     authorize(USER_ROLES.USER),
@@ -61,7 +61,7 @@ router.post(
 );
 
 router.post(
-  "/:id/add-kyc-back",
+  "/add-kyc-back",
   [
     verifyToken,
     authorize(USER_ROLES.USER),

@@ -277,14 +277,23 @@ const _me = async (req, res, next) => {
         `No user with id ${req.userId}`
       );
     }
+
+    let kycImages = false;
+    if(user.kycFrontImage && user.kycBackImage){
+      kycImages = true;
+    }
+
     res.status(StatusCodes.OK).json({
       data: {
         email: user.email,
-        firstname: user.firstname,
+        firstname: user.firstName,
         id: user.id,
-        lastname: user.lastname,
-        created_at: user.created_at,
-        updated_at: user.updated_at,
+        lastname: user.lastName,
+        active: user.active,
+        approved: user.approved,
+        kycImages: kycImages,
+        created_at: user.createdAt,
+        updated_at: user.updatedAt,
       },
       apiresponse: true,
     });
