@@ -35,9 +35,9 @@ router.get(
 router.get(
   "/:id",
   [
-    checkSchema(GetPropertyByIdSchema),
-    verifyToken,
-    authorize([USER_ROLES.ADMIN, USER_ROLES.USER]),
+    // checkSchema(GetPropertyByIdSchema),
+    // verifyToken,
+    // authorize([USER_ROLES.ADMIN, USER_ROLES.USER]),
   ],
   GetPropertyListingById
 );
@@ -97,9 +97,9 @@ router.post("/:id/add-images", multerPropertyImages().array('image', 15) ,AddIma
 router.get(
   "/:id/get-details/",
   [
-    verifyToken,
-    authorize([USER_ROLES.ADMIN, USER_ROLES.USER]),
-    checkSchema(GetPropertyWithDetailsByIdSchema),
+    // verifyToken,
+    // authorize([USER_ROLES.ADMIN, USER_ROLES.USER]),
+    // checkSchema(GetPropertyWithDetailsByIdSchema),
   ],
   GetPropertyWithDetailsByParams
 );

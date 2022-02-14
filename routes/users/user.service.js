@@ -192,58 +192,6 @@ const addKYCDocumentBack = async (request, response, next) => {
   }
 };
 
-const getCartContents = async (request, response, next) => {
-  try {
-    resolveSchemaValidationResult(request);
-
-    // if (request.params.id !== request.userId) {
-    //   throw new ErrorHandler(
-    //     StatusCodes.FORBIDDEN,
-    //     "User requesting for unauthorized service."
-    //   );
-    // }
-
-    let Cart = await models.Cart.findAll({
-      where: { userId: request.params.id },
-      raw: true,
-      nest: true,
-    });
-
-    if (!Cart || Cart.length == 0) {
-      response.status(StatusCodes.OK).json({
-        type: 'Cart',
-        data: {
-          CartItems: [],
-          NetTotal: 0,
-        },
-        Message: 'Cart Items for the user.',
-        apiresponse: true,
-      });
-
-      return;
-    }
-
-    let NetTotal = Cart.reduce(
-      (previous, current) => previous.subTotal + current.subTotal
-    );
-
-    if (Cart.length === 1) {
-      NetTotal = Cart[0].subTotal;
-    }
-
-    response.status(StatusCodes.OK).json({
-      type: 'Cart',
-      data: {
-        CartItems: Cart,
-        NetTotal: NetTotal,
-      },
-      Message: 'Cart Items for the user.',
-      apiresponse: true,
-    });
-  } catch (error) {
-    next();
-  }
-};
 
 const getCartContents = async (request, response, next) => {
   try {
