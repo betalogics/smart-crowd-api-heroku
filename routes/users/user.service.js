@@ -192,7 +192,6 @@ const addKYCDocumentBack = async (request, response, next) => {
   }
 };
 
-
 const getCartContents = async (request, response, next) => {
   try {
     resolveSchemaValidationResult(request);
@@ -206,7 +205,7 @@ const getCartContents = async (request, response, next) => {
 
     let Cart = await models.Cart.findAll({
       where: { userId: request.params.id },
-      include: {model: models.Property},
+      include: [{ model: models.Property, include: [{ model: models.Units }] }],
       raw: true,
       nest: true,
     });

@@ -96,7 +96,7 @@ const { sequelize } = require('./models');
 
 models.Cart.findAll({
   where: { userId: 2 },
-  include: {model: models.Property},
+  include: [{model: models.Property, include:[{model: models.Units}]}],
   raw: true,
   nest: true,
 }).then((res) => console.log(res))
