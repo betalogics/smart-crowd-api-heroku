@@ -206,6 +206,7 @@ const getCartContents = async (request, response, next) => {
 
     let Cart = await models.Cart.findAll({
       where: { userId: request.params.id },
+      include: {model: models.Property},
       raw: true,
       nest: true,
     });

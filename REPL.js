@@ -84,11 +84,19 @@ const { sequelize } = require('./models');
 // }
 // console.log(100000 + Math.floor(Math.random() * 900000));
 
-models.UserProperty.findAll({
-  where: { propertyId: 2 },
-  attributes: [],
-  include: { model: models.User, attributes: ["id"] },
+// models.UserProperty.findAll({
+//   where: { propertyId: 2 },
+//   attributes: [],
+//   include: { model: models.User, attributes: ["id"] },
+//   raw: true,
+//   nest: true,
+// }).then(res => console.log(res))
+//[ { User: { id: 1 } }, { User: { id: 3 } } ]
+
+
+models.Cart.findAll({
+  where: { userId: 2 },
+  include: {model: models.Property},
   raw: true,
   nest: true,
-}).then(res => console.log(res))
-//[ { User: { id: 1 } }, { User: { id: 3 } } ]
+}).then((res) => console.log(res))
