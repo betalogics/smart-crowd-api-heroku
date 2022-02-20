@@ -76,7 +76,6 @@ router.patch(
     checkSchema(EditItemsInCartSchema),
     verifyToken,
     authorize(USER_ROLES.USER),
-    currentUserRequest,
     approvedUserRequest,
   ],
   EditItemInCart
