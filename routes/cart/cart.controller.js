@@ -64,7 +64,6 @@ router.delete(
     checkSchema(RemoveItemFromCartSchema),
     verifyToken,
     authorize(USER_ROLES.USER),
-    currentUserRequest,
     approvedUserRequest,
   ],
   RemoveItemFromCart
