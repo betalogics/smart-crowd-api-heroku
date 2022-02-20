@@ -184,7 +184,7 @@ const removeItemFromCart = async (request, response, next) => {
     resolveSchemaValidationResult(request);
 
     let deleteCartItemRequest = {};
-    deleteCartItemRequest.userId = request.body.id;
+    deleteCartItemRequest.userId = request.userId;
     deleteCartItemRequest.propertyId = request.body.propertyId;
 
     let checkItemInCart = await model.Cart.findOne({

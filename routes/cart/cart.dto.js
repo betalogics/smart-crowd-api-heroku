@@ -56,12 +56,6 @@ const checkoutCartSchema = {
 }
 
 const removeItemFromCartSchema = {
-  id: {
-    in: ["body"],
-    isInt: true,
-    toInt: true,
-    errorMessage: "Id is required",
-  },
   propertyId: {
     in: ["body"],
     isInt: true,
