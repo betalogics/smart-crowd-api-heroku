@@ -246,7 +246,7 @@ const editItemInCart = async (request, response, next) => {
     resolveSchemaValidationResult(request);
 
     let editItemInCartRequest = {};
-    editItemInCartRequest.userId = request.body.id;
+    editItemInCartRequest.userId = request.userId;
     editItemInCartRequest.units = request.body.units;
     editItemInCartRequest.propertyId = request.body.propertyId;
 

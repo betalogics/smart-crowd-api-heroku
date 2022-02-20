@@ -71,12 +71,6 @@ const removeItemFromCartSchema = {
 };
 
 const editItemsInCartSchema = {
-  id: {
-    in: ["body"],
-    isInt: true,
-    toInt: true,
-    errorMessage: "Id is required",
-  },
   units: {
     in: ["body"],
     isInt: true,
