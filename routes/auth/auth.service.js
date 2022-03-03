@@ -449,7 +449,7 @@ const forgetPassword = async (request, response, next) => {
       limit: 1,
     });
 
-    if (LastRequestInTenDays) {
+    if (LastRequestInTenDays.length) {
       response.status(StatusCodes.OK).json({
         Message:
           'You cannot request a password change if your last request was made less than 10 days ago.',
