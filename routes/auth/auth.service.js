@@ -1,19 +1,25 @@
-const jwt = require("jsonwebtoken");
-const models = require("../../models");
-const { StatusCodes } = require("http-status-codes");
+const jwt = require('jsonwebtoken');
+const models = require('../../models');
+const { StatusCodes } = require('http-status-codes');
+const { fn, col, literal, where, Op } = require('sequelize');
 
 const {
   ErrorHandler,
   resolveSchemaValidationResult,
-} = require("../../helpers/errorHandler");
-const { createRefreshToken, createToken } = require("../../helpers/token");
-const { checkHash } = require("../../helpers/security");
-const { authorizedUser } = require("../../helpers/authorization");
-const { USER_ROLES } = require("../../constants/userRoles");
-const { generateSixDigitCode } = require("../../helpers/randomCodes");
-const { sendEmail } = require("../../utils/mailer");
+} = require('../../helpers/errorHandler');
+const {
+  createRefreshToken,
+  createToken,
+  createForgetPasswordToken,
+} = require('../../helpers/token');
+const { checkHash } = require('../../helpers/security');
+const { authorizedUser } = require('../../helpers/authorization');
+const { USER_ROLES } = require('../../constants/userRoles');
+const { generateSixDigitCode } = require('../../helpers/randomCodes');
+const { sendEmail } = require('../../utils/mailer');
+const { forgetPasswordBody } = require('../../constants/emailTemplates');
 
-require("dotenv").config();
+require('dotenv').config();
 
 const _register = async (req, res, next) => {
   try {
@@ -75,7 +81,7 @@ const _register = async (req, res, next) => {
 
     res.status(StatusCodes.CREATED).json({
       data: {
-        type: "user",
+        type: 'user',
         id: userCreated.id,
         attributes: {
           email: userCreated.email,
@@ -88,14 +94,14 @@ const _register = async (req, res, next) => {
       },
       included: [
         {
-          type: "token",
+          type: 'token',
           attributes: {
             token,
             expiration: new Date(decodedToken.exp * 1000),
           },
         },
         {
-          type: "refresh_token",
+          type: 'refresh_token',
           attributes: {
             token: refreshToken,
             expiration: new Date(decodedRefreshToken.exp * 1000),
@@ -119,7 +125,7 @@ const _login = async (req, res, next) => {
     if (!user || !checkHash(req.body.password, user.salt, user.password)) {
       throw new ErrorHandler(
         StatusCodes.UNAUTHORIZED,
-        "Wrong email or password"
+        'Wrong email or password'
       );
     }
 
@@ -159,7 +165,7 @@ const _login = async (req, res, next) => {
 
     res.status(StatusCodes.OK).json({
       data: {
-        type: "user",
+        type: 'user',
         id: user.id,
         attributes: {
           email: user.email,
@@ -172,14 +178,14 @@ const _login = async (req, res, next) => {
       },
       included: [
         {
-          type: "token",
+          type: 'token',
           attributes: {
             token,
             expiration: new Date(decoded.exp * 1000),
           },
         },
         {
-          type: "refresh_token",
+          type: 'refresh_token',
           attributes: {
             token: refreshToken,
             expiration: new Date(decodedRefreshToken.exp * 1000),
@@ -201,7 +207,7 @@ const _refresh = async (req, res, next) => {
     );
 
     if (!refreshToken) {
-      throw new ErrorHandler(StatusCodes.FORBIDDEN, "Refresh token expired");
+      throw new ErrorHandler(StatusCodes.FORBIDDEN, 'Refresh token expired');
     }
 
     // get user by token
@@ -248,14 +254,14 @@ const _refresh = async (req, res, next) => {
 
     res.status(StatusCodes.ACCEPTED).json({
       data: {
-        type: "token",
+        type: 'token',
         attributes: {
           token,
           expiration: new Date(decoded.exp * 1000),
         },
       },
       included: {
-        type: "refresh_token",
+        type: 'refresh_token',
         attributes: {
           token: newRefreshToken,
           expiration: new Date(decodedRefreshToken.exp * 1000),
@@ -279,7 +285,7 @@ const _me = async (req, res, next) => {
     }
 
     let kycImages = false;
-    if(user.kycFrontImage && user.kycBackImage){
+    if (user.kycFrontImage && user.kycBackImage) {
       kycImages = true;
     }
 
@@ -315,7 +321,7 @@ const createEmailVerificationRequest = async (request, response, next) => {
     if (User.active) {
       response
         .status(StatusCodes.BAD_REQUEST)
-        .json({ Message: "User is already active." });
+        .json({ Message: 'User is already active.' });
     }
 
     let VerificationRequestExists = await models.EmailVerification.findOne({
@@ -340,20 +346,20 @@ const createEmailVerificationRequest = async (request, response, next) => {
     if (!CreateNewVerificationRequest) {
       throw new ErrorHandler(
         StatusCodes.INTERNAL_SERVER_ERROR,
-        "Something went wrong"
+        'Something went wrong'
       );
     }
 
     let emailDetailsConfig = {};
     emailDetailsConfig.to = User.email;
-    emailDetailsConfig.subject = "Verification Code - Smart Crowd";
+    emailDetailsConfig.subject = 'Verification Code - Smart Crowd';
     emailDetailsConfig.text = `Your verification code is ${verificationCode}`;
 
     sendEmail(emailDetailsConfig);
 
     response
       .status(StatusCodes.OK)
-      .json({ Message: "Verification email sent", apiresponse: true });
+      .json({ Message: 'Verification email sent', apiresponse: true });
   } catch (error) {
     next(error);
   }
@@ -372,7 +378,7 @@ const completeEmailVerificationRequest = async (request, response, next) => {
     if (User.active) {
       response
         .status(StatusCodes.BAD_REQUEST)
-        .json({ Message: "User is already active.", apiresponse: false });
+        .json({ Message: 'User is already active.', apiresponse: false });
       return;
     }
 
@@ -383,8 +389,7 @@ const completeEmailVerificationRequest = async (request, response, next) => {
     });
 
     if (
-      EmailVerificationRequest.verificationCode ==
-      request.body.verificationCode
+      EmailVerificationRequest.verificationCode == request.body.verificationCode
     ) {
       let UpdateUserActiveStatus = await models.User.update(
         { active: true },
@@ -393,13 +398,125 @@ const completeEmailVerificationRequest = async (request, response, next) => {
     } else {
       response
         .status(StatusCodes.BAD_REQUEST)
-        .json({ Message: "Incorrect verification code", apiresponse: false });
+        .json({ Message: 'Incorrect verification code', apiresponse: false });
       return;
     }
 
     response
       .status(StatusCodes.CREATED)
-      .json({ Message: "User has been activated.", apiresponse: true });
+      .json({ Message: 'User has been activated.', apiresponse: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const forgetPassword = async (request, response, next) => {
+  try {
+    resolveSchemaValidationResult(request);
+
+    let User = await models.User.findOne({
+      where: { email: request.body.email },
+      raw: true,
+      nest: true,
+    });
+
+    if (!User) {
+      response.status(StatusCodes.CREATED).json({
+        Message:
+          'We have sent you an email with the link where you can reset your password',
+        apiresponse: true,
+      });
+      return;
+    }
+
+    let LastRequestInTenDays = await models.ForgetPassword.findAll({
+      where: {
+        [Op.and]: [
+          where(
+            fn(
+              'timestampdiff',
+              literal('day'),
+              col('created_at'),
+              literal('CURRENT_TIMESTAMP')
+            ),
+            { [Op.lte]: 10 }
+          ),
+        ],
+        email: request.body.email,
+      },
+      order: [['created_at', 'DESC']],
+      raw: true,
+      limit: 1,
+    });
+
+    if (LastRequestInTenDays) {
+      response.status(StatusCodes.OK).json({
+        Message:
+          'You cannot request a password change if your last request was made less than 10 days ago.',
+        apiresponse: true,
+      });
+      return;
+    }
+
+    let forgetPasswordToken = createForgetPasswordToken(request.body.email);
+
+    let ForgetPasswordEntry = await models.ForgetPassword.create({
+      email: request.body.email,
+      token: forgetPasswordToken,
+    });
+
+    let emailDetailsConfig = new Object();
+    emailDetailsConfig.to = request.body.email;
+    emailDetailsConfig.subject = 'Change of Password';
+    emailDetailsConfig.text = forgetPasswordBody(forgetPasswordToken);
+
+    sendEmail(emailDetailsConfig);
+
+    response.status(StatusCodes.CREATED).json({
+      Message:
+        'We have sent you an email with the link where you can reset your password',
+      apiresponse: true,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const validForgetPasswordLink = async (request, response, next) => {
+  try {
+    resolveSchemaValidationResult(request);
+
+    await jwt.verify(
+      request.query.token,
+      process.env.JWT_SECRET,
+      (err, decoded) => {
+        if (err) {
+          throw new ErrorHandler(StatusCodes.FORBIDDEN, err.message);
+        }
+        console.log(decoded.email);
+      }
+    );
+
+    response
+      .status(StatusCodes.OK)
+      .json({ Message: 'Link is active', apiresponse: true, validLink: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const resetPassword = async (request, response, next) => {
+  try {
+    resolveSchemaValidationResult(request);
+
+    await models.User.update(
+      { password: request.body.password, salt: '' },
+      { where: { id: request.userId } }
+    );
+
+    response
+      .status(StatusCodes.CREATED)
+      .json({ Message: 'Password changed successfully', apiresponse: true });
   } catch (error) {
     next(error);
   }
@@ -412,4 +529,7 @@ module.exports = {
   MeAuthService: _me,
   CreateEmailVerificationRequest: createEmailVerificationRequest,
   CompleteEmailVerificationRequest: completeEmailVerificationRequest,
+  ForgetPassword: forgetPassword,
+  ValidForgetPasswordLink: validForgetPasswordLink,
+  ResetPasswowrd: resetPassword,
 };

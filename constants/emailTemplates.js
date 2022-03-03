@@ -6,4 +6,8 @@ function rentDisbursementSubject(name) {
   return `Rent Disbursement for ${name}`;
 }
 
-module.exports = { rentDisbursementSubject, rentDisbursementAlert };
+function forgetPasswordBody(token){
+  return `Please follow the link to reset your password. The link is only active for the next one hour.\n\nhttp://localhost:3000/forget-password-request?id=${token}`;
+}
+
+module.exports = { rentDisbursementSubject, rentDisbursementAlert, forgetPasswordBody };

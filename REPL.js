@@ -2,6 +2,7 @@ const models = require('./models');
 
 const { QueryTypes } = require('sequelize');
 const { sequelize } = require('./models');
+const { fn, col, literal, Op, where } = require('sequelize');
 
 // models.Property.create({
 //   name: "House Two",
@@ -94,9 +95,29 @@ const { sequelize } = require('./models');
 //[ { User: { id: 1 } }, { User: { id: 3 } } ]
 
 
-models.Cart.findAll({
-  where: { userId: 2 },
-  include: [{model: models.Property, include:[{model: models.Units}]}],
+// models.Cart.findAll({
+//   where: { userId: 2 },
+//   include: [{model: models.Property, include:[{model: models.Units}]}],
+//   raw: true,
+//   nest: true,
+// }).then((res) => console.log(res))
+
+models.ForgetPassword.findAll({
+  where: {
+    [Op.and]: [
+      where(
+        fn(
+          'timestampdiff',
+          literal('day'),
+          col('created_at'),
+          literal('CURRENT_TIMESTAMP')
+        ),
+        { [Op.lte]: 10 }
+      ),
+    ],
+    email: 'hamzaahussain67.com'
+  },
+  order: [['created_at', 'DESC']],
   raw: true,
-  nest: true,
-}).then((res) => console.log(res))
+  limit: 1,
+}).then(res => console.log(res))

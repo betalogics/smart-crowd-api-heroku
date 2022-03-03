@@ -70,8 +70,36 @@ const completeEmailVerificationRequest = {
   },
 };
 
+const forgetPasswordSchema = {
+  email: {
+    in: ["body"],
+    errorMessage: "Email is required",
+    isEmail: true,
+    toLowerCase: true,
+  },
+}
+
+const validForgetPasswordRequestSchema = {
+  token: {
+    in: ["query"],
+    errorMessage: "Token is required",
+    isStr: true
+  }
+}
+
+const resetPasswordSchema = {
+  password: {
+    in: ["body"],
+    errorMessage: 'Password is required',
+    isStrongPassword: true
+  }
+}
+
 module.exports = {
   RegisterRequestSchema: registerRequestSchema,
   LoginRequestSchema: loginRequestSchema,
   CompleteEmailVerificationRequestSchema: completeEmailVerificationRequest,
+  ForgetPasswordSchema: forgetPasswordSchema,
+  ValidForgetPasswordRequestSchema: validForgetPasswordRequestSchema,
+  ResetPasswordSchema: resetPasswordSchema
 };

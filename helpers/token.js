@@ -15,7 +15,15 @@ const createRefreshToken = () => {
   return token;
 };
 
+const createForgetPasswordToken = (email) => {
+  const token = jwt.sign({ email: email }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
+  return token;
+};
+
 module.exports = {
   createRefreshToken,
   createToken,
+  createForgetPasswordToken
 };
