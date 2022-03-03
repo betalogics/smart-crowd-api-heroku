@@ -7,7 +7,7 @@ function rentDisbursementSubject(name) {
 }
 
 function forgetPasswordBody(token){
-  return `Please follow the link to reset your password. The link is only active for the next one hour.\n\nsmartcrowdshare.herokuapp.com/forget-password-request?id=${token}`;
+  return `Please follow the link to reset your password. The link is only active for the next one hour.\n\nsmartcrowdshare.herokuapp.com/forget-password/reset?id=${token}`;
 }
 
 module.exports = { rentDisbursementSubject, rentDisbursementAlert, forgetPasswordBody };
