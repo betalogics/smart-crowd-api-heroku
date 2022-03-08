@@ -199,6 +199,96 @@ const _login = async (req, res, next) => {
   }
 };
 
+const adminLogin = async (req, res, next) => {
+  try {
+    resolveSchemaValidationResult(req);
+
+    const user = await models.User.findOne({
+      where: { email: req.body.email },
+    });
+    if (!user || !checkHash(req.body.password, user.salt, user.password)) {
+      throw new ErrorHandler(
+        StatusCodes.UNAUTHORIZED,
+        'Wrong email or password'
+      );
+    }
+    if (user.role !== USER_ROLES.ADMIN) {
+      throw new ErrorHandler(
+        StatusCodes.UNAUTHORIZED,
+        'This user does not have admin priviliges.'
+      );
+    }
+
+    const token = createToken(user.id);
+    // store token in DB
+    const newToken = await models.JwtToken.create({
+      token,
+      user_id: user.id,
+    });
+    if (!newToken) {
+      throw new ErrorHandler(
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        "Couldn't create token"
+      );
+    }
+
+    const refreshToken = createRefreshToken();
+
+    // store refresh token in DB
+    const newRefreshToken = await models.JwtRefreshToken.create({
+      token: refreshToken,
+      user_id: user.id,
+    });
+
+    if (!newRefreshToken) {
+      throw new ErrorHandler(
+        StatusCodes.INTERNAL_SERVER_ERROR,
+        "Couldn't create refresh token"
+      );
+    }
+
+    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+    const decodedRefreshToken = await jwt.verify(
+      refreshToken,
+      process.env.JWT_SECRET
+    );
+
+    res.status(StatusCodes.OK).json({
+      data: {
+        type: 'user',
+        id: user.id,
+        attributes: {
+          email: user.email,
+          role: user.role,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          created_at: user.created_at,
+          updated_at: user.updated_at,
+        },
+      },
+      included: [
+        {
+          type: 'token',
+          attributes: {
+            token,
+            expiration: new Date(decoded.exp * 1000),
+          },
+        },
+        {
+          type: 'refresh_token',
+          attributes: {
+            token: refreshToken,
+            expiration: new Date(decodedRefreshToken.exp * 1000),
+          },
+        },
+      ],
+      apiresponse: true,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const _refresh = async (req, res, next) => {
   try {
     const refreshToken = jwt.verify(
@@ -525,6 +615,7 @@ const resetPassword = async (request, response, next) => {
 module.exports = {
   RegisterAuthService: _register,
   LoginAuthService: _login,
+  AdminLogin: adminLogin,
   RefreshTokenAuthService: _refresh,
   MeAuthService: _me,
   CreateEmailVerificationRequest: createEmailVerificationRequest,

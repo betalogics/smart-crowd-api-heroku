@@ -15,6 +15,7 @@ const {
   ForgetPassword,
   ValidForgetPasswordLink,
   ResetPasswowrd,
+  AdminLogin,
 } = require('./auth.service');
 const {
   RegisterRequestSchema,
@@ -31,7 +32,10 @@ router.post(
   checkSchema(RegisterRequestSchema),
   RegisterAuthService
 );
+
 router.post('/login', checkSchema(LoginRequestSchema), LoginAuthService);
+
+router.post('/admin-login', checkSchema(LoginRequestSchema), AdminLogin);
 
 router.post('/refresh', RefreshTokenAuthService);
 
