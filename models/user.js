@@ -69,6 +69,14 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         defaultValue: false
       },
+      kycDocumentType: {
+        type: DataTypes.ENUM('GovtIssuedID', 'DrivingLiscence', 'Passport'),
+        allowNull: true,
+      },
+      countryOfOrigin: {
+        type: DataTypes.STRING,
+        allowNull: false
+      }
     },
     {
       sequelize,

@@ -1,7 +1,7 @@
-const express = require("express");
-const verifyToken = require("../../middlewares/verifyToken");
-const authorize = require("../../middlewares/authorize");
-const { USER_ROLES } = require("../../constants/userRoles");
+const express = require('express');
+const verifyToken = require('../../middlewares/verifyToken');
+const authorize = require('../../middlewares/authorize');
+const { USER_ROLES } = require('../../constants/userRoles');
 const {
   GetUserListing,
   ApproveUsers,
@@ -11,74 +11,86 @@ const {
   GetCartContents,
   GetUnapprovedUserListing,
   GetUserVirtualWallet,
-} = require("./user.service");
-const { checkSchema } = require("express-validator");
+  UpdateUserAttributes,
+} = require('./user.service');
+const { checkSchema, body } = require('express-validator');
 const {
   ApproveUsersSchema,
   GetUserByIdSchema,
   GetUsersCartContentsSchema,
   AddKYCDocumentsSchema,
   GetUserVirtualWalletSchema,
-} = require("./user.dto");
-const { multerKYCDocuments } = require("../../middlewares/multer");
+  UpdateUserAttributesSchema,
+} = require('./user.dto');
+const { multerKYCDocuments } = require('../../middlewares/multer');
 const router = express.Router();
 
-router.get("/", [verifyToken, authorize([USER_ROLES.ADMIN])], GetUserListing);
+router.get('/', [verifyToken, authorize([USER_ROLES.ADMIN])], GetUserListing);
 
 router.get(
-  "/get-unapproved-users",
+  '/get-unapproved-users',
   [verifyToken, authorize(USER_ROLES.ADMIN)],
   GetUnapprovedUserListing
 );
 
 router.get(
-  "/:id",
+  '/:id',
   [verifyToken, authorize([USER_ROLES.ADMIN], checkSchema(GetUserByIdSchema))],
   GetUserById
 );
 
 router.patch(
-  "/:id/approve",
+  '/:id/approve',
   [verifyToken, authorize([USER_ROLES.ADMIN]), checkSchema(ApproveUsersSchema)],
   ApproveUsers
 );
 
 router.get(
-  "/:id/get-cart",
+  '/:id/get-cart',
   [verifyToken, checkSchema(GetUsersCartContentsSchema)],
   GetCartContents
 );
 
 router.post(
-  "/add-kyc-front",
+  '/add-kyc-front',
   [
     verifyToken,
     authorize(USER_ROLES.USER),
     checkSchema(AddKYCDocumentsSchema),
-    multerKYCDocuments().single("kycFront"),
+    multerKYCDocuments().single('kycFront'),
   ],
   AddKYCDocumentFront
 );
 
 router.post(
-  "/add-kyc-back",
+  '/add-kyc-back',
   [
     verifyToken,
     authorize(USER_ROLES.USER),
     checkSchema(AddKYCDocumentsSchema),
-    multerKYCDocuments().single("kycBack"),
+    multerKYCDocuments().single('kycBack'),
   ],
   AddKYCDocumentBack
 );
 
 router.get(
-  "/:id/virtual-wallet",
+  '/:id/virtual-wallet',
   [
     verifyToken,
     authorize(USER_ROLES.USER),
     checkSchema(GetUserVirtualWalletSchema),
   ],
   GetUserVirtualWallet
+);
+
+router.patch(
+  '/:id/update-user',
+  [
+    verifyToken,
+    authorize([USER_ROLES.ADMIN, USER_ROLES.USER]),
+    checkSchema(UpdateUserAttributesSchema)
+  ],
+  UpdateUserAttributes
 );
 
 module.exports = router;

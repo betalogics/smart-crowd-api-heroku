@@ -323,6 +323,45 @@ const createDepositFromWalletRequest = (request, response, next) => {
   }
 };
 
+const updateUserAttributes = async (request, response, next) => {
+  try {
+    resolveSchemaValidationResult(request);
+
+    let updateBody = new Object();
+
+    if (request.body?.firstName) {
+      updateBody.firstName = request.body.firstName;
+    }
+
+    if (request.body?.lastName) {
+      updateBody.lastName = request.body.lastName;
+    }
+
+    if (request.body?.isUsCitizen) {
+      updateBody.isUsCitizen = request.body.isUsCitizen;
+    }
+
+    if (request.body?.kycDocumentType) {
+      updateBody.kycDocumentType = request.body.kycDocumentType;
+    }
+
+    if (request.body?.countryOfOrigin) {
+      updateBody.countryOfOrigin = request.body.countryOfOrigin;
+    }
+
+    await models.User.update(
+      { ...updateBody },
+      { where: { id: request.params.id } }
+    );
+
+    response
+      .status(StatusCodes.CREATED)
+      .json({ Message: 'User updated successfully', apiresponse: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   GetUserListing: getUserListing,
   ApproveUsers: approveUsers,
@@ -333,4 +372,5 @@ module.exports = {
   GetUnapprovedUserListing: getUnapprovedUserListing,
   GetUserVirtualWallet: getUserVirtualWallet,
   CreateDepositFromWalletRequest: createDepositFromWalletRequest,
+  UpdateUserAttributes: updateUserAttributes,
 };
