@@ -225,6 +225,12 @@ const addPropertySchema = {
     isNumeric: true,
     errorMessage: "Longitude is required.",
   },
+  about: {
+    in: ["body"],
+    isString: true,
+    notEmpty: true,
+    errorMessage: "About is required"
+  }
 };
 
 const getPropertyWithDetailsByParam = {
@@ -600,6 +606,7 @@ class Property {
     this.latitude;
     this.longitude;
     this.units;
+    this.about
   }
 }
 

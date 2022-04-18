@@ -11,8 +11,8 @@ const {
   PropertyFinancials,
 } = require("./property.dto");
 
-require('dotenv').config();
-
+require("dotenv").config();
+const property = require("../../models/property");
 const _removeEmptyProperties = (object) => {
   for (prop in object) {
     if (object[prop] === null || object[prop] === undefined) {
@@ -31,13 +31,38 @@ const getPropertyListing = async (request, response, next) => {
     queryParams.limit = request.query.limit;
     queryParams.page = request.query.page;
 
-    let allPropertylisting = await model.Property.findAll({
-      include: [{ model: model.Units }],
+    const properties = await model.Property.findAll({
+      include: [
+        {
+          model: model.PropertyImages,
+          attributes: [
+            [model.sequelize.literal("GROUP_CONCAT(image_url)"), "images"],
+            "propertyId",
+          ],
+        },
+        {
+          model: model.Units,
+        },
+      ],
       raw: true,
       nest: true,
+      group: ["id"],
     });
 
-    if (!allPropertylisting) {
+    const data = properties.map((p) => ({
+      ...p,
+      PropertyImages: {
+        ...p.PropertyImages,
+        images: p?.PropertyImages?.images
+          ?.split(",")
+          .map((image) => ({ source: image })),
+      },
+      Unit: {
+        ...p.Unit,
+      },
+    }));
+
+    if (!properties) {
       throw new ErrorHandler(
         StatusCodes.NOT_FOUND,
         "No property listing was found."
@@ -46,7 +71,7 @@ const getPropertyListing = async (request, response, next) => {
 
     response.status(StatusCodes.OK).json({
       type: "Property",
-      data: allPropertylisting,
+      data: data,
       apiresponse: true,
     });
   } catch (error) {
@@ -75,6 +100,16 @@ const getPropertyListingById = async (request, response, next) => {
 
     let { id } = property;
 
+    const images = await model.PropertyImages.findAll({
+      attributes: [
+        [model.sequelize.literal("GROUP_CONCAT(image_url)"), "images"],
+        "propertyId",
+      ],
+      where: { propertyId: id },
+      raw: true,
+      nest: true,
+    });
+
     response.status(StatusCodes.OK).json({
       type: "Property",
       data: {
@@ -82,6 +117,12 @@ const getPropertyListingById = async (request, response, next) => {
         id: id,
         attributes: {
           ...property,
+          PropertyImages: {
+            images: images[0]?.images
+              ?.split(",")
+              .map((img) => ({ source: img })),
+            propertyId: images[0].propertyId,
+          },
         },
       },
       apiresponse: true,
@@ -120,6 +161,7 @@ const addNewProperty = async (request, response, next) => {
     createPropertyBody.latitude = request.body.latitude;
     createPropertyBody.longitude = request.body.longitude;
     createPropertyBody.units = request.body.units;
+    createPropertyBody.about = request.body.about;
 
     // if (
     //   Object.keys(_removeEmptyProperties(createPropertyBody)).length !==
@@ -422,10 +464,19 @@ const addImagesToProperty = async (request, response, next) => {
       throw new ErrorHandler(StatusCodes.BAD_REQUEST, "No files were uploaded");
     }
 
+    const updatedProperty = await model.Property.update(
+      { imgThumbnail:  process.env.SITE_URL + "/properties/" + filesUploaded[0].filename, },
+      { where: { id: Property.id } }
+    );
+
+    console.log(JSON.stringify({ updatedProperty }, null, 4));
+
     for (let i = 0; i < filesUploaded.length; i++) {
       let SavedFileToDB = await model.PropertyImages.create({
         propertyId: request.params.id,
         imageName: filesUploaded[i].filename,
+        imageUrl:
+          process.env.SITE_URL + "/properties/" + filesUploaded[i].filename,
       });
 
       if (!SavedFileToDB) {
@@ -508,7 +559,6 @@ const getPropertyWithDetailsByParam = async (request, response, next) => {
       raw: true,
       nest: true,
     });
-
     let propertyImages = Images.map(
       (image) => process.env.SITE_URL + "/properties/" + image.imageName
     );

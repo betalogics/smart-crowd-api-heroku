@@ -83,7 +83,7 @@ const validForgetPasswordRequestSchema = {
   token: {
     in: ["query"],
     errorMessage: "Token is required",
-    isStr: true
+    isString: true
   }
 }
 

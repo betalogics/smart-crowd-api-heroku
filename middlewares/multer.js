@@ -11,8 +11,10 @@ function multerPropertyImages() {
       cb(null, "./assets/properties");
     },
     filename: (req, file, cb) => {
-      let extension = file.originalname.split(".")[1];
-      cb(null, Date.now() + "." + extension);
+      let extension = file.originalname.split(".")[1]
+      let randomNumber = Math.floor(Math.random() * 100000).toString()
+      let fileName = randomNumber + "_" + Date.now() + "." + extension
+      cb(null, fileName);
       NUM++;
     },
   });

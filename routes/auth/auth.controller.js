@@ -33,7 +33,10 @@ router.post(
   RegisterAuthService
 );
 
-router.post('/login', checkSchema(LoginRequestSchema), LoginAuthService);
+router.post('/login', (req,res, next)=> {
+  console.log("Login Router RUns")
+  next()
+} ,checkSchema(LoginRequestSchema), LoginAuthService);
 
 router.post('/admin-login', checkSchema(LoginRequestSchema), AdminLogin);
 

@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate({ Units, Cart, Description, UserProperty, Rent, VirtualWallet }) {
+    static associate({ Units, Cart, Description, UserProperty, Rent, VirtualWallet, PropertyImages,  }) {
       // define association here
       this.hasOne(Units, {foreignKey: 'propertyId'});
       this.hasMany(Cart, {foreignKey: 'propertyId'});
@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(UserProperty, {foreignKey: 'propertyId'});
       this.hasMany(Rent, {foreignKey: 'propertyId'});
       this.hasMany(VirtualWallet, {foreignKey: 'propertyId'});
+      this.hasMany(PropertyImages, { foreignKey: "propertyId" })
     }
   }
   Property.init(
@@ -45,8 +46,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       countryInitials: {
         type: DataTypes.STRING,
-        allowNull: false
-      },
+        allowNull: false },
       postCode: {
         type: DataTypes.STRING,
         allowNull: false
@@ -63,6 +63,14 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      about: {
+        type: DataTypes.STRING,
+        allowNull: false
+      },
+      imgThumbnail: {
+        type: DataTypes.STRING,
+        allowNull: true
+      }
     },
     {
       sequelize,

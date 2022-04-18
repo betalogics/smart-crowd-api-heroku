@@ -44,6 +44,10 @@ router.get(
 
 router.post(
   "/add",
+  (req,res,next) => {
+    console.log("Req runs")
+    next()
+  },
   [
     checkSchema(AddNewPropertySchema),
     verifyToken,
@@ -92,7 +96,7 @@ router.post(
   AddFinancialsToPropertyById
 );
 
-router.post("/:id/add-images", multerPropertyImages().array('image', 15) ,AddImagesToProperty);
+router.post("/:id/add-images",multerPropertyImages().array('image', 15) , AddImagesToProperty);
 
 router.get(
   "/:id/get-details/",

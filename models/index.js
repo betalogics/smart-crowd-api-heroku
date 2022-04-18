@@ -9,8 +9,7 @@ const config = require(__dirname + "/../config/config.js")[env];
 const db = {};
 
 const sequelize = new Sequelize(config);
-
-sequelize.sync({force: false}).then((res) => console.log("Sync complete."));
+// sequelize.sync({ force: false, alter: true }).then((res) => console.log("Sync complete."));
 
 fs.readdirSync(__dirname)
   .filter((file) => {
